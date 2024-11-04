@@ -1,11 +1,15 @@
+# Базовый образ Python
 FROM python:3.9
 
+# Рабочая директория
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
+# Копирование и установка зависимостей
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY db.py db.py
-COPY fake.py fake.py
+# Копирование всех файлов проекта
+COPY . .
 
-CMD ["python", "/app/db.py", "&&", "python", "/app/fake.py"]
+# Выполнение миграций и создание суперпользователя
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
