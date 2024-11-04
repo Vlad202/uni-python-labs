@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проект оренди приміщень</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .student-info {
+            font-style: italic;
+            color: #007bff;
+            font-size: 1.3rem;
+        }
+        .table-container {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class="container-fluid mt-5">
+
+    <h1>{{ project_name }}</h1>
+    <p class="student-info">ПІБ студента: {{ student_name }}, Група: {{ student_group }}</p>
+
+    <!-- Сетка таблиц -->
+    <div class="row">
+        <!-- Таблица Орендарі -->
+        <div class="col-md-6 table-container">
+            <h2>Таблиця: Орендарі</h2>
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Компанія</th>
+                        <th>Менеджер</th>
+                        <th>Телефон</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tenant in tenants %}
+                    <tr>
+                        <td>{{ tenant.company_name }}</td>
+                        <td>{{ tenant.manager_name }}</td>
+                        <td>{{ tenant.phone }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Пагинация для Орендарі -->
+            <nav>
+                <ul class="pagination">
+                    {% if tenants.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?tenant_page=1">Перша</a></li>
+                        <li class="page-item"><a class="page-link" href="?tenant_page={{ tenants.previous_page_number }}">Назад</a></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">{{ tenants.number }} з {{ tenants.paginator.num_pages }}</span></li>
+                    {% if tenants.has_next %}
+                        <li class="page-item"><a class="page-link" href="?tenant_page={{ tenants.next_page_number }}">Вперед</a></li>
+                        <li class="page-item"><a class="page-link" href="?tenant_page={{ tenants.paginator.num_pages }}">Остання</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Таблица Приміщення -->
+        <div class="col-md-6 table-container">
+            <h2>Таблиця: Приміщення</h2>
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Площа</th>
+                        <th>Вартість оренди</th>
+                        <th>Поверх</th>
+                        <th>Телефон</th>
+                        <th>Тип обробки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for premise in premises %}
+                    <tr>
+                        <td>{{ premise.area }}</td>
+                        <td>{{ premise.rent_cost }}</td>
+                        <td>{{ premise.floor }}</td>
+                        <td>{{ premise.phone_in_premise|yesno:"Так,Ні" }}</td>
+                        <td>{{ premise.get_decoration_type_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Пагинация для Приміщення -->
+            <nav>
+                <ul class="pagination">
+                    {% if premises.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?premise_page=1">Перша</a></li>
+                        <li class="page-item"><a class="page-link" href="?premise_page={{ premises.previous_page_number }}">Назад</a></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">{{ premises.number }} з {{ premises.paginator.num_pages }}</span></li>
+                    {% if premises.has_next %}
+                        <li class="page-item"><a class="page-link" href="?premise_page={{ premises.next_page_number }}">Вперед</a></li>
+                        <li class="page-item"><a class="page-link" href="?premise_page={{ premises.paginator.num_pages }}">Остання</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Таблица Договори оренди -->
+    <div class="row">
+        <div class="col-md-12 table-container">
+            <h2>Таблиця: Договори оренди</h2>
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Дата початку</th>
+                        <th>Тривалість (дні)</th>
+                        <th>Призначення</th>
+                        <th>Орендар</th>
+                        <th>Приміщення</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agreement in rental_agreements %}
+                    <tr>
+                        <td>{{ agreement.start_date }}</td>
+                        <td>{{ agreement.duration_days }}</td>
+                        <td>{{ agreement.get_purpose_display }}</td>
+                        <td>{{ agreement.tenant.company_name }}</td>
+                        <td>{{ agreement.premise }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Пагинация для Договори оренди -->
+            <nav>
+                <ul class="pagination">
+                    {% if rental_agreements.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?rental_agreement_page=1">Перша</a></li>
+                        <li class="page-item"><a class="page-link" href="?rental_agreement_page={{ rental_agreements.previous_page_number }}">Назад</a></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">{{ rental_agreements.number }} з {{ rental_agreements.paginator.num_pages }}</span></li>
+                    {% if rental_agreements.has_next %}
+                        <li class="page-item"><a class="page-link" href="?rental_agreement_page={{ rental_agreements.next_page_number }}">Вперед</a></li>
+                        <li class="page-item"><a class="page-link" href="?rental_agreement_page={{ rental_agreements.paginator.num_pages }}">Остання</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+</body>
+</html>
